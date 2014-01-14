@@ -401,6 +401,25 @@ var _ = { };
   // Example:
   // _.zip(['a','b','c','d'], [1,2,3]) returns [['a',1], ['b',2], ['c',3], ['d',undefined]]
   _.zip = function() {
+    var args = Array.prototype.slice.call(arguments);
+    var length = 0;
+    var result = [];
+
+    _.each(args, function(array){
+      if(array.length > length){
+        length = array.length;
+      }
+    });
+
+    for(var i = 0; i < length; i++) {
+      var temporaryArray = [];
+      _.each(args, function(array){
+        temporaryArray.push(array[i]);
+      });
+      result.push(temporaryArray);
+    }
+
+    return result;
   };
 
   // Takes a multidimensional array and converts it to a one-dimensional array.
@@ -408,16 +427,52 @@ var _ = { };
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+    var isArray = Array.isArray(nestedArray);
+    if(!isArray){
+      return nestedArray;
+    }
+
+    var result = result || [];
+    _.each(nestedArray, function(elem){
+      if(Array.isArray(elem)){
+        result.push(_.flatten(elem, result));
+      } else {
+        result.push(elem);
+      }
+    });
+
+    //temporary fix till I can ascertain why extra circular elements are ending up in the result
+    result = _.filter(result, function(elem){
+      return !Array.isArray(elem);
+    });
+
+    return result;
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
   // every item shared between all the passed-in arrays.
   _.intersection = function() {
+    var args = Array.prototype.slice.call(arguments);
+    var firstArray = args.shift();
+
+    return _.filter(firstArray, function(elem){
+      return _.every(args, function(array){
+        return _.indexOf(array, elem) !== -1;
+      });
+    });
   };
 
   // Take the difference between one array and a number of other arrays.
   // Only the elements present in just the first array will remain.
   _.difference = function(array) {
+    var args = Array.prototype.slice.call(arguments);
+    var firstArray = args.shift();
+
+    return _.filter(firstArray, function(elem){
+      return _.every(args, function(array){
+        return _.indexOf(array, elem) === -1;
+      });
+    });
   };
 
 
