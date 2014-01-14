@@ -486,6 +486,26 @@ var _ = { };
   //
   // See the Underbar readme for details.
   _.throttle = function(func, wait) {
+    var lastCalled = new Date("Jan 1, 1970");
+    var lastReturnedValue = undefined;
+    var pendingFunctions = 1;
+
+    return function throttledFunction(){
+      var timeNow = new Date();
+      if(timeNow - lastCalled > wait){
+        lastCalled = new Date();
+        var lastReturnedValue = func.call(this, arguments);
+        return lastReturnedValue;
+      } else {
+        pendingFunctions ++;
+        setTimeout(function(){
+          throttledFunction.call(this, arguments);
+          pendingFunctions --;
+        }, wait*pendingFunctions);
+        return lastReturnedValue;
+      }
+      //return lastReturnedValue;
+    }
   };
 
 }).call(this);
