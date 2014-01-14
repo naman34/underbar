@@ -74,12 +74,28 @@ var _ = { };
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, test) {
+
+    var filteredArray = [];
+
+    _.each(collection, function(element, index){
+      if(!!test(element, index)){
+        filteredArray.push(element);
+      }
+    });
+
+    return filteredArray;
+
   };
 
   // Return all elements of an array that don't pass a truth test.
   _.reject = function(collection, test) {
     // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
+    var inverseFunction = function(element, index){
+      return !test(element, index);
+    };
+
+    return _.filter(collection, inverseFunction);
   };
 
   // Produce a duplicate-free version of the array.
