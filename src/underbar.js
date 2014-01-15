@@ -393,6 +393,26 @@ var _ = { };
   // of that string. For example, _.sortBy(people, 'name') should sort
   // an array of people by their name.
   _.sortBy = function(collection, iterator) {
+
+    var func = (typeof iterator === "function") ? iterator : function(a){
+      return a[iterator];
+    }
+
+    var temp;
+
+    for(var i = 0; i < collection.length; i++){
+      for(var j = i+1; j < collection.length; j++){
+        
+        if( func(collection[i]) > func(collection[j]) || func(collection[i] === undefined)){
+          temp = collection[i];
+          collection[i] = collection[j];
+          collection[j] = temp;
+        }
+      }
+    }
+
+    return collection;
+
   };
 
   // Zip together two or more arrays with elements of the same index
@@ -494,14 +514,14 @@ var _ = { };
       var timeNow = new Date();
       if(timeNow - lastCalled > wait){
         lastCalled = new Date();
-        var lastReturnedValue = func.call(this, arguments);
+        lastReturnedValue = func.call(this, arguments);
         return lastReturnedValue;
       } else {
         pendingFunctions ++;
         setTimeout(function(){
           throttledFunction.call(this, arguments);
           pendingFunctions --;
-        }, wait*pendingFunctions);
+        }, wait);
         return lastReturnedValue;
       }
       //return lastReturnedValue;
